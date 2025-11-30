@@ -1,0 +1,297 @@
+import tkinter as tk
+import pygame
+import sys
+import threading
+import random
+import time
+
+# KONSTANTA DAN PENGATURAN 
+# Warna yang Diubah
+WARNA_LATAR_BELAKANG = "#2C3E50"  # Latar belakang utama
+WARNA_GARIS_GRID = "#34495E"  # Garis pemisah grid
+WARNA_X_PEMAIN = "#E74C3C"  # Warna untuk simbol X
+WARNA_O_PEMAIN = "#3498DB"  # Warna untuk simbol O
+WARNA_MENANG = "#F1C40F"  # Warna saat ada pemenang
+
+# Ukuran
+UKURAN_GRID = 600  # Ukuran papan permainan
+UKURAN_SEL = UKURAN_GRID // 3  # Ukuran setiap sel
+LEBAR_GARIS = 15  # Lebar garis grid
+
+# Suara (Pastikan file suara ada)
+try:
+    pygame.mixer.init()
+    SUARA_GERAKAN = pygame.mixer.Sound("move.wav")  # Suara saat pemain bergerak
+    SUARA_MENANG = pygame.mixer.Sound("win.wav")  # Suara saat ada pemenang
+except:
+    print("Modul suara tidak dapat diinisialisasi.")
+    SUARA_GERAKAN = None
+    SUARA_MENANG = None
+
+# FUNGSI UTILITAS 
+def putar_suara(suara):
+    """Memutar suara jika tersedia."""
+    if suara:
+        suara.play()
+
+# KELAS PYGAME FRAME 
+class PygameFrame(tk.Frame):
+    def __init__(self, master, game):
+        super().__init__(master)
+        self.game = game
+        self.canvas = tk.Canvas(self, width=UKURAN_GRID, height=UKURAN_GRID, bg=WARNA_LATAR_BELAKANG, highlightthickness=0)
+        self.canvas.pack()
+
+        self.pygame_screen = pygame.Surface((UKURAN_GRID, UKURAN_GRID))
+        self.latar_belakang = WARNA_LATAR_BELAKANG
+        self.garis_grid = WARNA_GARIS_GRID
+        self.warna_x = WARNA_X_PEMAIN
+        self.warna_o = WARNA_O_PEMAIN
+        self.warna_menang = WARNA_MENANG
+        self.animasi_alpha = 0  # Nilai transparansi untuk animasi
+
+        threading.Thread(target=self.jalankan_pygame, daemon=True).start()
+
+        self.canvas.bind("<Button-1>", self.ketika_diklik)
+
+    def ketika_diklik(self, event):
+        """Menangani klik pada papan permainan."""
+        if not self.game.game_over:
+            kolom = event.x // UKURAN_SEL
+            baris = event.y // UKURAN_SEL
+            self.game.buat_gerakan(baris, kolom)
+
+    def gambar_papan(self):
+        """Menggambar garis grid pada papan permainan."""
+        for i in range(1, 3):
+            pygame.draw.line(self.pygame_screen, self.garis_grid, (i * UKURAN_SEL, 0), (i * UKURAN_SEL, UKURAN_GRID), LEBAR_GARIS)
+            pygame.draw.line(self.pygame_screen, self.garis_grid, (0, i * UKURAN_SEL), (UKURAN_GRID, i * UKURAN_SEL), LEBAR_GARIS)
+
+    def gambar_XO(self, baris, kolom, pemain):
+        """Menggambar simbol X atau O pada sel yang ditentukan."""
+        x = kolom * UKURAN_SEL + UKURAN_SEL // 2
+        y = baris * UKURAN_SEL + UKURAN_SEL // 2
+        jari_jari = UKURAN_SEL // 4
+        if pemain == 'X':
+            pygame.draw.line(self.pygame_screen, self.warna_x, (x - jari_jari, y - jari_jari), (x + jari_jari, y + jari_jari), LEBAR_GARIS)
+            pygame.draw.line(self.pygame_screen, self.warna_x, (x + jari_jari, y - jari_jari), (x - jari_jari, y + jari_jari), LEBAR_GARIS)
+        else:
+            pygame.draw.circle(self.pygame_screen, self.warna_o, (x, y), jari_jari, LEBAR_GARIS)
+
+    def gambar_indikator_giliran(self):
+        """Menggambar indikator giliran pemain dengan animasi transparansi."""
+        s = pygame.Surface((UKURAN_GRID, UKURAN_GRID), pygame.SRCALPHA)
+        s.fill((0, 0, 0, self.animasi_alpha))
+        self.pygame_screen.blit(s, (0, 0))
+
+        warna_teks = self.warna_x if self.game.pemain == "X" else self.warna_o
+        font = pygame.font.Font(None, 60)
+        teks = font.render(f"Giliran {self.game.pemain}", True, warna_teks)
+        teks_rect = teks.get_rect(center=(UKURAN_GRID // 2, 50))
+        self.pygame_screen.blit(teks, teks_rect)
+
+    def jalankan_pygame(self):
+        """Loop utama pygame untuk menggambar dan memperbarui tampilan."""
+        pygame.init()
+        clock = pygame.time.Clock()
+
+        while True:
+            self.pygame_screen.fill(self.latar_belakang)
+            self.gambar_papan()
+
+            for baris in range(3):
+                for kolom in range(3):
+                    if self.game.papan[baris][kolom] != " ":
+                        self.gambar_XO(baris, kolom, self.game.papan[baris][kolom])
+
+            self.gambar_indikator_giliran()
+
+            # Animasi transparansi
+            if self.animasi_alpha < 100:
+                self.animasi_alpha += 5
+            else:
+                self.animasi_alpha = 0
+
+            self.canvas.create_image(0, 0, image=tk.PhotoImage(data=pygame.image.tostring(self.pygame_screen, 'RGBA')), anchor='nw')
+            clock.tick(30)
+
+# KELAS GAME 
+class Game:
+    def __init__(self, mode="Player vs Player", difficulty="Mudah"):
+        self.papan = [[" " for _ in range(3)] for _ in range(3)]
+        self.pemain = "X"
+        self.game_over = False
+        self.mode = mode
+        self.difficulty = difficulty
+        self.skor_x = 0
+        self.skor_o = 0
+
+    def buat_gerakan(self, baris, kolom):
+        """Membuat gerakan pemain pada papan permainan."""
+        if self.papan[baris][kolom] == " " and not self.game_over:
+            self.papan[baris][kolom] = self.pemain
+            putar_suara(SUARA_GERAKAN)
+            if self.cek_menang(self.pemain):
+                print("Pemain " + self.pemain + " menang!")
+                putar_suara(SUARA_MENANG)
+                self.game_over = True
+            elif self.cek_seri():
+                print("Permainan seri!")
+                self.game_over = True
+            else:
+                self.pemain = "O" if self.pemain == "X" else "X"
+                if self.mode == "AI vs Player" and self.pemain == "O" and not self.game_over:
+                    self.gerakan_ai()
+
+    def cek_menang(self, pemain):
+        """Memeriksa apakah ada pemain yang menang."""
+        # Cek baris
+        for baris in range(3):
+            if all(self.papan[baris][kolom] == pemain for kolom in range(3)):
+                return True
+        # Cek kolom
+        for kolom in range(3):
+            if all(self.papan[baris][kolom] == pemain for baris in range(3)):
+                return True
+        # Cek diagonal
+        if all(self.papan[i][i] == pemain for i in range(3)):
+            return True
+        if all(self.papan[i][2 - i] == pemain for i in range(3)):
+            return True
+        return False
+
+    def cek_seri(self):
+        """Memeriksa apakah permainan berakhir seri."""
+        return all(self.papan[baris][kolom] != " " for baris in range(3) for kolom in range(3))
+
+    def gerakan_ai(self):
+        """Membuat gerakan AI berdasarkan tingkat kesulitan."""
+        if self.difficulty == "Mudah":
+            self.gerakan_ai_mudah()
+        elif self.difficulty == "Sedang":
+            self.gerakan_ai_sedang()
+        elif self.difficulty == "Sulit":
+            self.gerakan_ai_sulit()
+
+    def gerakan_ai_mudah(self):
+        """Gerakan AI mudah: memilih sel kosong secara acak."""
+        sel_kosong = [(baris, kolom) for baris in range(3) for kolom in range(3) if self.papan[baris][kolom] == " "]
+        if sel_kosong:
+            baris, kolom = random.choice(sel_kosong)
+            self.buat_gerakan(baris, kolom)
+
+    def gerakan_ai_sedang(self):
+        """Gerakan AI sedang: mencoba menang atau memblokir pemain."""
+        # Coba menang
+        for baris in range(3):
+            for kolom in range(3):
+                if self.papan[baris][kolom] == " ":
+                    self.papan[baris][kolom] = "O"
+                    if self.cek_menang("O"):
+                        self.buat_gerakan(baris, kolom)
+                        return
+                    self.papan[baris][kolom] = " "
+
+        # Coba blokir pemain
+        for baris in range(3):
+            for kolom in range(3):
+                if self.papan[baris][kolom] == " ":
+                    self.papan[baris][kolom] = "X"
+                    if self.cek_menang("X"):
+                        self.buat_gerakan(baris, kolom)
+                        return
+                    self.papan[baris][kolom] = " "
+
+        # Pilih acak dengan sedikit preferensi ke tengah
+        sel_kosong = [(baris, kolom) for baris in range(3) for kolom in range(3) if self.papan[baris][kolom] == " "]
+        if sel_kosong:
+            if (1, 1) in sel_kosong and random.random() < 0.7:  # 70% chance to choose center
+                baris, kolom = (1, 1)
+            else:
+                baris, kolom = random.choice(sel_kosong)
+            self.buat_gerakan(baris, kolom)
+
+    def gerakan_ai_sulit(self):
+        """Gerakan AI sulit: menggunakan algoritma Minimax."""
+        # Implementasi algoritma Minimax
+        skor_terbaik = -float('inf')
+        gerakan_terbaik = None
+        for baris in range(3):
+            for kolom in range(3):
+                if self.papan[baris][kolom] == " ":
+                    self.papan[baris][kolom] = "O"
+                    skor = self.minimax(self.papan, 0, False)
+                    self.papan[baris][kolom] = " "
+                    if skor > skor_terbaik:
+                        skor_terbaik = skor
+                        gerakan_terbaik = (baris, kolom)
+
+        if gerakan_terbaik:
+            baris, kolom = gerakan_terbaik
+            self.buat_gerakan(baris, kolom)
+
+    def minimax(self, papan, kedalaman, memaksimalkan):
+        """Algoritma Minimax untuk menentukan gerakan terbaik."""
+        if self.cek_menang("X"):
+            return -1
+        elif self.cek_menang("O"):
+            return 1
+        elif all(papan[baris][kolom] != " " for baris in range(3) for kolom in range(3)):
+            return 0
+
+        if memaksimalkan:
+            skor_terbaik = -float('inf')
+            for baris in range(3):
+                for kolom in range(3):
+                    if papan[baris][kolom] == " ":
+                        papan[baris][kolom] = "O"
+                        skor = self.minimax(papan, kedalaman + 1, False)
+                        papan[baris][kolom] = " "
+                        skor_terbaik = max(skor, skor_terbaik)
+            return skor_terbaik
+        else:
+            skor_terbaik = float('inf')
+            for baris in range(3):
+                for kolom in range(3):
+                    if papan[baris][kolom] == " ":
+                        papan[baris][kolom] = "X"
+                        skor = self.minimax(papan, kedalaman + 1, True)
+                        papan[baris][kolom] = " "
+                        skor_terbaik = min(skor, skor_terbaik)
+            return skor_terbaik
+
+# KELAS MAIN APP
+class MainApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Tic Tac Toe Kolaboratif")
+        self.root.geometry("800x600")
+        self.root.configure(bg=WARNA_LATAR_BELAKANG)
+        self.mode = tk.StringVar(value="Player vs Player")
+        self.difficulty = tk.StringVar(value="Mudah")
+        self.themes = {
+            "Default": {"bg": WARNA_LATAR_BELAKANG, "grid": WARNA_GARIS_GRID, "x": WARNA_X_PEMAIN, "o": WARNA_O_PEMAIN, "win": WARNA_MENANG},
+            "Dark": {"bg": "#1E272E", "grid": "#2D3436", "x": "#FF4757", "o": "#10AC84", "win": "#FFC312"},
+            "Light": {"bg": "#FFFFFF", "grid": "#E0E0E0", "x": "#D32F2F", "o": "#1976D2", "win": "#FBC02D"},
+            "Neon": {"bg": "#000000", "grid": "#222222", "x": "#00FF00", "o": "#00FFFF", "win": "#FFFF00"}
+        }
+        self.theme = tk.StringVar(value="Default")
+        self.game = None
+        self.create_menu()
+
+    def create_menu(self):
+        """Membuat menu utama aplikasi."""
+        # Menu utama
+        frame_menu = tk.Frame(self.root, bg=WARNA_LATAR_BELAKANG, padx=20, pady=20)
+        frame_menu.pack(pady=50)
+
+        tk.Label(frame_menu, text="Pilih Mode:", bg=WARNA_LATAR_BELAKANG, fg="white", font=("Arial", 14)).grid(row=0, column=0, sticky="w")
+        modes = ["Player vs Player", "AI vs Player"]
+        for i, mode in enumerate(modes):
+            rb = tk.Radiobutton(frame_menu, text=mode, variable=self.mode, value=mode, bg=WARNA_LATAR_BELAKANG, fg="white", selectcolor=WARNA_GARIS_GRID)
+            rb.grid(row=i+1, column=0, sticky="w")
+
+        tk.Label(frame_menu, text="Pilih Kesulitan (untuk AI):", bg=WARNA_LATAR_BELAKANG, fg="white", font=("Arial", 14)).grid(row=0, column=1, sticky="w", padx=20)
+        difficulties = ["Mudah", "Sedang", "Sulit"]
+        for i, difficulty in enumerate(difficulties):
+            rb = tk.Radiobutton(frame_menu, text=difficulty
