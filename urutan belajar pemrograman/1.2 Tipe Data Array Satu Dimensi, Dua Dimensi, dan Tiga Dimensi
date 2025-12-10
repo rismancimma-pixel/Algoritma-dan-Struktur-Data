@@ -1,4 +1,4 @@
-#satu dimensi(1D) 
+#satu dimensi(1D) #
 
 #include <stdio.h>
 
@@ -10,6 +10,54 @@ int main() {
     // Mengakses dan menampilkan elemen array 1D
     for (int i = 0; i < 5; i++) {
         printf("Elemen ke-%d: %d\n", i, angka[i]);
+    }
+    printf("\n");
+    return 0;
+}
+
+# dua dimensi (2D) #
+
+#include <stdio.h>
+
+int main() {
+    // Deklarasi dan inisialisasi array 2D (matriks 2x3)
+    int matriks[2][3] = {
+        {1, 2, 3},
+        {4, 5, 6}
+    };
+
+    printf("--- Array Dua Dimensi ---\n");
+    // Mengakses dan menampilkan elemen array 2D
+    for (int i = 0; i < 2; i++) { // Iterasi baris
+        for (int j = 0; j < 3; j++) { // Iterasi kolom
+
+            printf("Matriks[%d][%d]: %d\t", i, j, matriks[i][j]);
+        }
+        printf("\n"); // Pindah baris setelah setiap baris matriks
+    }
+    printf("\n");
+    return 0;
+}
+
+# tiga dimensi (3D) #
+
+#include <stdio.h>
+
+int main() {
+    // Deklarasi dan inisialisasi array 3D (kubus 2x2x2)
+    int kubus[2][2][2] = {
+        { {1, 2}, {3, 4} },
+        { {5, 6}, {7, 8} }
+    };
+
+    printf("--- Array Tiga Dimensi ---\n");
+    // Mengakses dan menampilkan elemen array 3D
+    for (int i = 0; i < 2; i++) { // Dimensi pertama
+        for (int j = 0; j < 2; j++) { // Dimensi kedua
+            for (int k = 0; k < 2; k++) { // Dimensi ketiga
+                printf("Kubus[%d][%d][%d]: %d\n", i, j, k, kubus[i][j][k]);
+            }
+        }
     }
     printf("\n");
     return 0;
