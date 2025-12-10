@@ -1,1 +1,142 @@
+# Mengimpor modul yang dibutuhkan untuk union dan struktur
+from ctypes import Union, Structure, c_int, c_float, c_char_p, POINTER, malloc, free
+from dataclasses import dataclass  # Untuk struktur yang lebih sederhana di Python
 
+# -----------------------------------------------------------------------------
+# Langkah 1: Rancang UNION untuk Data Tambahan Mahasiswa
+# Tujuan: Menyimpan data tambahan yang beragam tipe (hanya satu aktif sekaligus)
+# Misal: Nomor telepon (int), IPK akhir (float), atau catatan (string)
+# -----------------------------------------------------------------------------
+class DataTambahanUnion(Union):
+    _fields_ = [
+        ("no_telp", c_int),       # Jika data tambahan adalah nomor telepon (tanpa awalan 0)
+        ("ipk_akhir", c_float),   # Jika data tambahan adalah IPK akhir
+        ("catatan", c_char_p)     # Jika data tambahan adalah catatan string
+    ]
+
+# Tambahkan tag untuk mengetahui data tambahan mana yang aktif
+class DataTambahan(Structure):
+    _fields_ = [
+        ("tag", c_int),  # Tag: 1 = no_telp, 2 = ipk_akhir, 3 = catatan
+        ("data", DataTambahanUnion)
+    ]
+
+
+# -----------------------------------------------------------------------------
+# Langkah 2: Rancang STRUKTUR untuk Data Utama Mahasiswa
+# Tujuan: Menyimpan data mahasiswa yang kompleks (berbagai tipe data dalam satu unit)
+# -----------------------------------------------------------------------------
+@dataclass
+class MahasiswaStruktur:
+    nama: str
+    nim: str
+    tahun_masuk: int
+    jurusan: str
+    data_tambahan: DataTambahan  # Menggabungkan dengan union data tambahan
+
+
+# -----------------------------------------------------------------------------
+# Langkah 3: Rancang ARRAY untuk Menyimpan Banyak Objek Mahasiswa
+# Tujuan: Menyimpan kumpulan data mahasiswa secara teratur dan mudah diakses
+# Kita akan menggunakan array dinamis dengan alokasi memori manual (untuk contoh perancangan yang tepat)
+# -----------------------------------------------------------------------------
+def buat_array_mahasiswa(ukuran: int) -> POINTER(MahasiswaStruktur):
+    """Fungsi untuk membuat array dinamis mahasiswa"""
+    # Alokasi memori untuk 'ukuran' objek MahasiswaStruktur
+    array_mhs = POINTER(MahasiswaStruktur)()
+    array_mhs = malloc(ukuran * MahasiswaStruktur.size)
+    
+    if not array_mhs:
+        print("Gagal membuat array mahasiswa! Alokasi memori gagal.")
+        return None
+    return array_mhs
+
+
+# -----------------------------------------------------------------------------
+# Langkah 4: Fungsi Bantuan untuk Menampilkan Data Mahasiswa
+# -----------------------------------------------------------------------------
+def tampilkan_data_mahasiswa(array_mhs: POINTER(MahasiswaStruktur), jumlah_mhs: int):
+    print("\n=== DAFTAR DATA MAHASISWA ===")
+    for i in range(jumlah_mhs):
+        mhs = array_mhs[i]
+        print(f"\nMahasiswa ke-{i+1}:")
+        print(f"Nama          : {mhs.nama}")
+        print(f"NIM           : {mhs.nim}")
+        print(f"Tahun Masuk   : {mhs.tahun_masuk}")
+        print(f"Jurusan       : {mhs.jurusan}")
+        
+        # Tampilkan data tambahan berdasarkan tag
+        print("Data Tambahan : ", end="")
+        if mhs.data_tambahan.tag == 1:
+            print(f"Nomor Telepon: 0{mhs.data_tambahan.data.no_telp}")  # Tambah awalan 0
+        elif mhs.data_tambahan.tag == 2:
+            print(f"IPK Akhir    : {mhs.data_tambahan.data.ipk_akhir:.2f}")
+        elif mhs.data_tambahan.tag == 3:
+            print(f"Catatan      : {mhs.data_tambahan.data.catatan.decode('utf-8')}")
+        else:
+            print("Tidak ada")
+
+
+# -----------------------------------------------------------------------------
+# Langkah 5: Implementasi Perancangan (Penggunaan Array + Struktur + Union)
+# -----------------------------------------------------------------------------
+def main():
+    # 1. Tentukan jumlah mahasiswa yang akan disimpan
+    jumlah_mhs = 3
+
+    # 2. Buat array dinamis untuk menyimpan mahasiswa
+    array_mhs = buat_array_mahasiswa(jumlah_mhs)
+    if not array_mhs:
+        return
+
+    # 3. Isi data mahasiswa ke dalam array (termasuk data Risman)
+    ## Mahasiswa 1: Risman (data tambahan = catatan)
+    data_tambahan_risman = DataTambahan()
+    data_tambahan_risman.tag = 3
+    data_tambahan_risman.data.catatan = b"Aktif mengikuti organisasi mahasiswa tahun 2025"
+    
+    array_mhs[0] = MahasiswaStruktur(
+        nama="Risman",
+        nim="D0425330",
+        tahun_masuk=2025,
+        jurusan="Teknik Informatika",
+        data_tambahan=data_tambahan_risman
+    )
+
+    ## Mahasiswa 2: Siti Aminah (data tambahan = IPK akhir)
+    data_tambahan_siti = DataTambahan()
+    data_tambahan_siti.tag = 2
+    data_tambahan_siti.data.ipk_akhir = 3.92
+    
+    array_mhs[1] = MahasiswaStruktur(
+        nama="Siti Aminah",
+        nim="2023002",
+        tahun_masuk=2023,
+        jurusan="Sistem Informasi",
+        data_tambahan=data_tambahan_siti
+    )
+
+    ## Mahasiswa 3: Budi Santoso (data tambahan = nomor telepon)
+    data_tambahan_budi = DataTambahan()
+    data_tambahan_budi.tag = 1
+    data_tambahan_budi.data.no_telp = 81234567890  # Tanpa awalan 0
+    
+    array_mhs[2] = MahasiswaStruktur(
+        nama="Budi Santoso",
+        nim="2024005",
+        tahun_masuk=2024,
+        jurusan="Teknik Komputer",
+        data_tambahan=data_tambahan_budi
+    )
+
+    # 4. Tampilkan semua data mahasiswa
+    tampilkan_data_mahasiswa(array_mhs, jumlah_mhs)
+
+    # 5. Membebaskan memori array (SANGAT PENTING untuk mencegah memory leak)
+    free(array_mhs)
+    print("\n\nMemori array telah dibebaskan dengan sukses!")
+
+
+# Jalankan program
+if __name__ == "__main__":
+    main()
