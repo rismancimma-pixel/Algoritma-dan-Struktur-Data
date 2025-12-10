@@ -1,1 +1,17 @@
+#include <stdio.h>
 
+// Fungsi yang menggunakan variabel statis
+void hitungPanggilan() {
+    static int jumlahPanggilan = 0; // Variabel statis, diinisialisasi hanya sekali
+    jumlahPanggilan++;
+    printf("Fungsi ini telah dipanggil sebanyak %d kali.\n", jumlahPanggilan);
+}
+
+int main() {
+    printf("--- Variabel Statis ---\n");
+    hitungPanggilan(); // Panggilan ke-1
+    hitungPanggilan(); // Panggilan ke-2
+    hitungPanggilan(); // Panggilan ke-3
+    printf("\n");
+    return 0;
+}
