@@ -1,1 +1,128 @@
+# -----------------------------------------------------------------------------
+# Pengertian Stack
+# -----------------------------------------------------------------------------
+print("=== PENGERTIAN STACK ===")
+print("Stack adalah struktur data linear yang mengikuti aturan LIFO (Last In, First Out).")
+print("Operasi utama:")
+print("- Push: Menambahkan elemen ke atas stack")
+print("- Pop: Menghapus dan mengembalikan elemen teratas stack")
+print("- Peek/Top: Melihat elemen teratas tanpa menghapusnya")
+print("- IsEmpty: Memeriksa apakah stack kosong")
+print("- IsFull: Memeriksa apakah stack penuh (hanya untuk stack berukuran tetap)")
+print("- Size: Melihat jumlah elemen dalam stack\n")
 
+
+# -----------------------------------------------------------------------------
+# Contoh 1: Implementasi Stack dengan List (Python)
+# Python list sudah memiliki metode yang cocok untuk stack:
+# - append() = Push
+# - pop() = Pop (jika tanpa indeks, menghapus elemen terakhir)
+# -----------------------------------------------------------------------------
+print("=== CONTOH 1: STACK DENGAN LIST (RIWAYAT HALAMAN WEB) ===")
+
+# Inisialisasi stack kosong
+riwayat_web = []
+
+# Operasi Push (menambahkan halaman web)
+riwayat_web.append("https://google.com")
+riwayat_web.append("https://github.com/fuadadnansyah/Algoritma")
+riwayat_web.append("https://youtube.com")
+riwayat_web.append("https://linkedin.com/in/risman-d0425330")  # Halaman Risman
+
+print(f"Stack riwayat web setelah push: {riwayat_web}")
+print(f"Jumlah elemen: {len(riwayat_web)}")
+print(f"Elemen teratas (peek): {riwayat_web[-1]}")  # Melihat teratas dengan indeks -1
+
+# Operasi Pop (kembali ke halaman sebelumnya)
+halaman_terhapus = riwayat_web.pop()
+print(f"\nSetelah pop '{halaman_terhapus}': {riwayat_web}")
+print(f"Elemen teratas baru: {riwayat_web[-1]}")
+
+# Operasi IsEmpty
+print(f"Apakah stack kosong? {len(riwayat_web) == 0}")
+print("-" * 60)
+
+
+# -----------------------------------------------------------------------------
+# Contoh 2: Implementasi Stack Kustom dengan Kelas (Penuh dengan Fungsi Utama)
+# Untuk memahami lebih dalam cara kerja stack
+# -----------------------------------------------------------------------------
+print("\n=== CONTOH 2: STACK KUSTOM DENGAN KELAS (DATA MAHASISWA SEMENTARA) ===")
+
+class StackKustom:
+    def __init__(self, ukuran_maks=None):
+        self.stack = []
+        self.ukuran_maks = ukuran_maks  # Ukuran maksimum stack (opsional)
+
+    def push(self, elemen):
+        """Menambahkan elemen ke atas stack"""
+        if self.ukuran_maks is not None and len(self.stack) >= self.ukuran_maks:
+            print("❌ Stack penuh! Tidak bisa menambahkan elemen.")
+            return
+        self.stack.append(elemen)
+        print(f"✅ Push: {elemen['nama']} (NIM: {elemen['nim']})")
+
+    def pop(self):
+        """Menghapus dan mengembalikan elemen teratas stack"""
+        if self.is_empty():
+            print("❌ Stack kosong! Tidak bisa menghapus elemen.")
+            return None
+        elemen_terhapus = self.stack.pop()
+        print(f"❌ Pop: {elemen_terhapus['nama']} (NIM: {elemen_terhapus['nim']})")
+        return elemen_terhapus
+
+    def peek(self):
+        """Melihat elemen teratas tanpa menghapusnya"""
+        if self.is_empty():
+            print("❌ Stack kosong! Tidak ada elemen teratas.")
+            return None
+        return self.stack[-1]
+
+    def is_empty(self):
+        """Memeriksa apakah stack kosong"""
+        return len(self.stack) == 0
+
+    def size(self):
+        """Melihat jumlah elemen dalam stack"""
+        return len(self.stack)
+
+    def tampilkan_stack(self):
+        """Menampilkan seluruh elemen dalam stack (dari bawah ke atas)"""
+        if self.is_empty():
+            print("📭 Stack kosong.")
+            return
+        print("📭 Isi stack (dari bawah ke atas):")
+        for idx, elemen in enumerate(self.stack, 1):
+            print(f"{idx}. Nama: {elemen['nama']:15} | NIM: {elemen['nim']:10}")
+
+
+# Implementasi Stack Kustom untuk data mahasiswa
+stack_mahasiswa = StackKustom(ukuran_maks=4)  # Stack dengan ukuran maks 4
+
+# Data mahasiswa (termasuk Risman)
+mhs1 = {"nama": "Siti Aminah", "nim": "2023002", "tahun_masuk": 2023}
+mhs2 = {"nama": "Risman", "nim": "D0425330", "tahun_masuk": 2025}
+mhs3 = {"nama": "Budi Santoso", "nim": "2024005", "tahun_masuk": 2024}
+mhs4 = {"nama": "Eka Putri", "nim": "2022010", "tahun_masuk": 2022}
+mhs5 = {"nama": "Fajar Setiawan", "nim": "2025001", "tahun_masuk": 2025}
+
+# Operasi Push
+stack_mahasiswa.push(mhs1)
+stack_mahasiswa.push(mhs2)  # Risman masuk ke stack
+stack_mahasiswa.push(mhs3)
+stack_mahasiswa.push(mhs4)
+stack_mahasiswa.push(mhs5)  # Mencoba push ke stack penuh
+
+print("\n--- Status Stack Setelah Push ---")
+stack_mahasiswa.tampilkan_stack()
+print(f"Jumlah elemen: {stack_mahasiswa.size()}")
+print(f"Elemen teratas (peek): {stack_mahasiswa.peek()['nama']}")
+
+# Operasi Pop
+print("\n--- Melakukan Pop 2 Kali ---")
+stack_mahasiswa.pop()
+stack_mahasiswa.pop()  # Risman akan keluar di pop kedua
+
+print("\n--- Status Stack Setelah Pop ---")
+stack_mahasiswa.tampilkan_stack()
+print(f"Apakah stack kosong? {stack_mahasiswa.is_empty()}")
