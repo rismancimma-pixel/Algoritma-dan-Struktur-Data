@@ -1,1 +1,27 @@
+#include <stdio.h> // Header untuk fungsi input/output seperti printf
+
+int main() {
+    // Deklarasi dan inisialisasi variabel tipe data character
+    char grade = 'A';
+    char inisial = 'D';
+
+    // Deklarasi dan inisialisasi variabel tipe data integer
+    int umur = 19;
+    int tahunLahir = 2006;
+
+    // Deklarasi dan inisialisasi variabel tipe data floating point
+    float tinggi = 175.5f; // 'f' menunjukkan ini float, bukan double
+    double beratBadan = 68.75;
+
+    // Menampilkan nilai dari variabel-variabel
+    printf("--- Tipe Data Dasar ---\n");
+    printf("Grade: %c\n", grade);
+    printf("Inisial: %c\n", inisial);
+    printf("Umur: %d tahun\n", umur);
+    printf("Tahun Lahir: %d\n", tahunLahir);
+    printf("Tinggi: %.2f cm\n", tinggi); // .2f untuk 2 angka di belakang koma
+    printf("Berat Badan: %.2lf kg\n", beratBadan); // .2lf untuk double
+
+    return 0; // Mengindikasikan program berakhir dengan sukses
+}
 
