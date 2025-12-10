@@ -1,1 +1,178 @@
+# Data mahasiswa yang akan diurutkan (termasuk data Risman)
+data_mahasiswa = [
+    {"nama": "Siti Aminah", "nim": "2023002", "tahun_masuk": 2023},
+    {"nama": "Risman", "nim": "D0425330", "tahun_masuk": 2025},
+    {"nama": "Budi Santoso", "nim": "2024005", "tahun_masuk": 2024},
+    {"nama": "Eka Putri", "nim": "2022010", "tahun_masuk": 2022},
+    {"nama": "Fajar Setiawan", "nim": "2025001", "tahun_masuk": 2025},
+    {"nama": "Gita Lestari", "nim": "2021008", "tahun_masuk": 2021},
+    {"nama": "Hadi Prasetyo", "nim": "2024003", "tahun_masuk": 2024}
+]
 
+# Fungsi bantuan untuk menampilkan data mahasiswa
+def tampilkan_data(daftar, judul):
+    print(f"\n=== {judul} ===")
+    for idx, mhs in enumerate(daftar, 1):
+        print(f"{idx}. Nama: {mhs['nama']:15} | NIM: {mhs['nim']:10} | Tahun Masuk: {mhs['tahun_masuk']}")
+
+
+# -----------------------------------------------------------------------------
+# 1. Algoritma Shell Sort
+# Cara kerja: Variasi Insertion Sort yang mengurutkan elemen dengan jarak (gap) yang lebih besar terlebih dahulu,
+# lalu mengurangi gap sampai menjadi 1 (seperti Insertion Sort biasa).
+# -----------------------------------------------------------------------------
+def shell_sort(daftar, kunci="tahun_masuk"):
+    data_terurut = daftar.copy()
+    n = len(data_terurut)
+    gap = n // 2  # Mulai dengan gap setengah dari ukuran data
+
+    while gap > 0:
+        # Lakukan Insertion Sort untuk setiap kelompok dengan jarak gap
+        for i in range(gap, n):
+            elemen_saat_ini = data_terurut[i]
+            j = i
+
+            # Geser elemen yang lebih besar dari elemen_saat_ini ke posisi gap langkah ke kiri
+            while j >= gap and data_terurut[j - gap][kunci] > elemen_saat_ini[kunci]:
+                data_terurut[j] = data_terurut[j - gap]
+                j -= gap
+
+            # Tempatkan elemen_saat_ini di posisi yang tepat
+            data_terurut[j] = elemen_saat_ini
+        
+        # Kurangi gap menjadi setengahnya
+        gap = gap // 2
+    return data_terurut
+
+
+# -----------------------------------------------------------------------------
+# 2. Algoritma Merge Sort
+# Cara kerja: Menggunakan strategi "divide and conquer" — membagi data menjadi bagian kecil,
+# mengurutkan setiap bagian, lalu menggabungkan bagian-bagian yang sudah terurut.
+# -----------------------------------------------------------------------------
+def merge_sort(daftar, kunci="tahun_masuk"):
+    data_terurut = daftar.copy()
+    n = len(data_terurut)
+
+    # Basis kasus: jika data hanya 1 elemen, sudah terurut
+    if n <= 1:
+        return data_terurut
+
+    # Bagi data menjadi dua bagian
+    tengah = n // 2
+    bagian_kiri = merge_sort(data_terurut[:tengah], kunci)
+    bagian_kanan = merge_sort(data_terurut[tengah:], kunci)
+
+    # Fungsi untuk menggabungkan dua bagian yang sudah terurut
+    def gabung(kiri, kanan):
+        hasil = []
+        i = j = 0
+
+        # Bandingkan elemen dari kedua bagian dan tambahkan yang lebih kecil ke hasil
+        while i < len(kiri) and j < len(kanan):
+            if kiri[i][kunci] < kanan[j][kunci]:
+                hasil.append(kiri[i])
+                i += 1
+            else:
+                hasil.append(kanan[j])
+                j += 1
+
+        # Tambahkan sisa elemen dari bagian kiri (jika ada)
+        while i < len(kiri):
+            hasil.append(kiri[i])
+            i += 1
+
+        # Tambahkan sisa elemen dari bagian kanan (jika ada)
+        while j < len(kanan):
+            hasil.append(kanan[j])
+            j += 1
+
+        return hasil
+
+    # Gabungkan bagian kiri dan kanan yang sudah terurut
+    return gabung(bagian_kiri, bagian_kanan)
+
+
+# -----------------------------------------------------------------------------
+# 3. Algoritma Quick Sort
+# Cara kerja: Juga menggunakan "divide and conquer" — pilih satu elemen sebagai "pivot",
+# pisahkan elemen yang lebih kecil dari pivot ke kiri dan yang lebih besar ke kanan,
+# lalu urutkan bagian kiri dan kanan secara rekursif.
+# -----------------------------------------------------------------------------
+def quick_sort(daftar, kunci="tahun_masuk", kiri=None, kanan=None):
+    # Inisialisasi kiri dan kanan pada pemanggilan pertama
+    if kiri is None and kanan is None:
+        daftar = daftar.copy()  # Buat salinan data agar asli tidak berubah
+        kiri = 0
+        kanan = len(daftar) - 1
+
+    # Basis kasus: jika kiri >= kanan, bagian data sudah terurut
+    if kiri >= kanan:
+        return daftar
+
+    # Pilih pivot (disini menggunakan elemen terakhir sebagai pivot)
+    pivot = daftar[kanan][kunci]
+    indeks_pivot = kiri  # Indeks untuk menempatkan elemen yang lebih kecil dari pivot
+
+    # Pisahkan elemen yang lebih kecil dari pivot ke kiri
+    for i in range(kiri, kanan):
+        if daftar[i][kunci] <= pivot:
+            daftar[i], daftar[indeks_pivot] = daftar[indeks_pivot], daftar[i]
+            indeks_pivot += 1
+
+    # Tempatkan pivot di posisi yang tepat (antara elemen kecil dan besar)
+    daftar[indeks_pivot], daftar[kanan] = daftar[kanan], daftar[indeks_pivot]
+
+    # Urutkan bagian kiri dan kanan pivot secara rekursif
+    quick_sort(daftar, kunci, kiri, indeks_pivot - 1)
+    quick_sort(daftar, kunci, indeks_pivot + 1, kanan)
+
+    return daftar
+
+
+# -----------------------------------------------------------------------------
+# Implementasi dan Tampilan Hasil
+# -----------------------------------------------------------------------------
+if __name__ == "__main__":
+    # Tampilkan data asli
+    tampilkan_data(data_mahasiswa, "DATA MAHASISWA ASLI")
+
+    # 1. Hasil Shell Sort (urutkan berdasarkan tahun_masuk)
+    shell_terurut = shell_sort(data_mahasiswa, kunci="tahun_masuk")
+    tampilkan_data(shell_terurut, "SHELL SORT (URUT BERDASARKAN TAHUN MASUK)")
+
+    # 2. Hasil Merge Sort (urutkan berdasarkan NIM)
+    merge_terurut = merge_sort(data_mahasiswa, kunci="nim")
+    tampilkan_data(merge_terurut, "MERGE SORT (URUT BERDASARKAN NIM)")
+
+    # 3. Hasil Quick Sort (urutkan berdasarkan tahun_masuk + NIM)
+    # Ubah fungsi quick_sort agar mendukung urutan ganda
+    def quick_sort_urut_ganda(daftar, kiri=None, kanan=None):
+        if kiri is None and kanan is None:
+            daftar = daftar.copy()
+            kiri = 0
+            kanan = len(daftar) - 1
+
+        if kiri >= kanan:
+            return daftar
+
+        # Pivot berdasarkan (tahun_masuk, nim)
+        pivot_tahun = daftar[kanan]["tahun_masuk"]
+        pivot_nim = daftar[kanan]["nim"]
+        indeks_pivot = kiri
+
+        for i in range(kiri, kanan):
+            mhs_i_tahun = daftar[i]["tahun_masuk"]
+            mhs_i_nim = daftar[i]["nim"]
+            # Bandingkan tahun dulu, jika sama bandingkan NIM
+            if (mhs_i_tahun < pivot_tahun) or (mhs_i_tahun == pivot_tahun and mhs_i_nim < pivot_nim):
+                daftar[i], daftar[indeks_pivot] = daftar[indeks_pivot], daftar[i]
+                indeks_pivot += 1
+
+        daftar[indeks_pivot], daftar[kanan] = daftar[kanan], daftar[indeks_pivot]
+        quick_sort_urut_ganda(daftar, kiri, indeks_pivot - 1)
+        quick_sort_urut_ganda(daftar, indeks_pivot + 1, kanan)
+        return daftar
+
+    quick_terurut_ganda = quick_sort_urut_ganda(data_mahasiswa)
+    tampilkan_data(quick_terurut_ganda, "QUICK SORT (URUT BERDASARKAN TAHUN + NIM)")
