@@ -1,1 +1,44 @@
 
+#include <stdio.h>
+#include <string.h>
+
+// Mendefinisikan union bernama 'Data'
+union Data {
+    int i;
+    float f;
+    char str[20];
+};
+
+int main() {
+    union Data data_saya;
+
+    printf("--- Konsep Unions ---\n");
+
+    // Mengisi nilai ke anggota integer
+    data_saya.i = 10;
+    printf("Setelah mengisi integer:\n");
+    printf("data_saya.i: %d\n", data_saya.i);
+    printf("data_saya.f: %.2f (nilai tidak valid)\n", data_saya.f); // Akan menampilkan sampah/nilai tidak terdefinisi
+    printf("data_saya.str: %s (nilai tidak valid)\n", data_saya.str); // Akan menampilkan sampah/nilai tidak terdefinisi
+
+    printf("Ukuran union Data: %lu bytes (sama dengan anggota terbesar)\n", sizeof(union Data));
+    printf("Ukuran int: %lu bytes\n", sizeof(int));
+    printf("Ukuran float: %lu bytes\n", sizeof(float));
+    printf("Ukuran char[20]: %lu bytes\n", sizeof(char[20]));
+
+    // Mengisi nilai ke anggota float (ini akan menimpa nilai integer sebelumnya)
+    data_saya.f = 220.5f;
+    printf("\nSetelah mengisi float:\n");
+    printf("data_saya.i: %d (nilai tidak valid)\n", data_saya.i); // Akan menampilkan sampah/nilai tidak terdefinisi
+    printf("data_saya.f: %.2f\n", data_saya.f);
+    printf("data_saya.str: %s (nilai tidak valid)\n", data_saya.str); // Akan menampilkan sampah/nilai tidak terdefinisi
+
+    // Mengisi nilai ke anggota string (ini akan menimpa nilai float sebelumnya)
+    strcpy(data_saya.str, "Halo Dunia");
+    printf("\nSetelah mengisi string:\n");
+    printf("data_saya.i: %d (nilai tidak valid)\n", data_saya.i); // Akan menampilkan sampah/nilai tidak terdefinisi
+    printf("data_saya.f: %.2f (nilai tidak valid)\n", data_saya.f); // Akan menampilkan sampah/nilai tidak terdefinisi
+    printf("data_saya.str: %s\n", data_saya.str);
+
+    return 0;
+}
