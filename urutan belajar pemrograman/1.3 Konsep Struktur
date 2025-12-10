@@ -1,1 +1,40 @@
+# konsep struktur #
 
+#include <stdio.h>
+#include <string.h> // Untuk fungsi strcpy
+
+// Mendefinisikan struktur bernama 'Mahasiswa'
+struct Mahasiswa {
+    char nama[50];
+    char nim[15];
+    float ipk;
+    int semester;
+};
+
+int main() {
+    // Deklarasi variabel bertipe struct Mahasiswa
+    struct Mahasiswa mhs1;
+
+    // Mengisi nilai ke anggota struktur mhs1
+    strcpy(mhs1.nama, "Dedi Kurniawan"); // Menggunakan strcpy untuk string
+    strcpy(mhs1.nim, "2023001");
+    mhs1.ipk = 3.85f;
+    mhs1.semester = 3;
+
+    // Menampilkan informasi mahasiswa
+    printf("--- Data Mahasiswa ---\n");
+    printf("Nama: %s\n", mhs1.nama);
+    printf("NIM: %s\n", mhs1.nim);
+    printf("IPK: %.2f\n", mhs1.ipk);
+    printf("Semester: %d\n", mhs1.semester);
+
+    // Contoh lain: deklarasi dan inisialisasi langsung
+    struct Mahasiswa mhs2 = {"Siti Aminah", "2023002", 3.92f, 4};
+    printf("\n--- Data Mahasiswa Lain ---\n");
+    printf("Nama: %s\n", mhs2.nama);
+    printf("NIM: %s\n", mhs2.nim);
+    printf("IPK: %.2f\n", mhs2.ipk);
+    printf("Semester: %d\n", mhs2.semester);
+
+    return 0;
+}
