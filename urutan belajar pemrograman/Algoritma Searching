@@ -1,1 +1,94 @@
+# Data mahasiswa yang akan dicari (termasuk data Risman)
+data_mahasiswa = [
+    {"nama": "Siti Aminah", "nim": "2023002", "tahun_masuk": 2023},
+    {"nama": "Risman", "nim": "D0425330", "tahun_masuk": 2025},
+    {"nama": "Budi Santoso", "nim": "2024005", "tahun_masuk": 2024},
+    {"nama": "Eka Putri", "nim": "2022010", "tahun_masuk": 2022},
+    {"nama": "Fajar Setiawan", "nim": "2025001", "tahun_masuk": 2025},
+    {"nama": "Gita Lestari", "nim": "2021008", "tahun_masuk": 2021},
+    {"nama": "Hadi Prasetyo", "nim": "2024003", "tahun_masuk": 2024}
+]
 
+# Fungsi bantuan untuk menampilkan hasil pencarian
+def tampilkan_hasil(pencarian, kunci, nilai_kunci):
+    if pencarian is not None:
+        print(f"\n✅ Data dengan {kunci} '{nilai_kunci}' ditemukan:")
+        print(f"Nama: {pencarian['nama']} | NIM: {pencarian['nim']} | Tahun Masuk: {pencarian['tahun_masuk']}")
+    else:
+        print(f"\n❌ Data dengan {kunci} '{nilai_kunci}' tidak ditemukan.")
+
+
+# -----------------------------------------------------------------------------
+# 1. Algoritma Linear Search (Pencarian Linier)
+# Cara kerja: Mencari elemen satu per satu dari awal hingga akhir data.
+# Cocok untuk data yang tidak terurut atau jumlah data sedikit.
+# -----------------------------------------------------------------------------
+def linear_search(daftar, kunci, nilai_kunci):
+    # Iterasi semua elemen dalam data
+    for mhs in daftar:
+        if mhs[kunci] == nilai_kunci:
+            return mhs  # Kembalikan data jika ditemukan
+    return None  # Kembalikan None jika tidak ditemukan
+
+
+# -----------------------------------------------------------------------------
+# 2. Algoritma Binary Search (Pencarian Biner)
+# Cara kerja: Mencari elemen dengan membagi data yang TERURUT menjadi dua bagian,
+# lalu memeriksa bagian mana yang berisi elemen yang dicari. Ulangi sampai ditemukan.
+# Lebih cepat dari Linear Search untuk data yang banyak dan terurut.
+# -----------------------------------------------------------------------------
+def binary_search(daftar, kunci, nilai_kunci):
+    # Pastikan data terurut berdasarkan kunci yang sama
+    # Membuat salinan data dan mengurutkannya agar data asli tidak berubah
+    data_terurut = sorted(daftar, key=lambda x: x[kunci])
+    
+    kiri = 0
+    kanan = len(data_terurut) - 1
+
+    while kiri <= kanan:
+        # Cari indeks tengah data
+        tengah = (kiri + kanan) // 2
+        elemen_tengah = data_terurut[tengah][kunci]
+
+        if elemen_tengah == nilai_kunci:
+            return data_terurut[tengah]  # Kembalikan data jika ditemukan
+        elif elemen_tengah < nilai_kunci:
+            kiri = tengah + 1  # Cari di bagian kanan
+        else:
+            kanan = tengah - 1  # Cari di bagian kiri
+
+    return None  # Kembalikan None jika tidak ditemukan
+
+
+# -----------------------------------------------------------------------------
+# Implementasi dan Tampilan Hasil
+# -----------------------------------------------------------------------------
+if __name__ == "__main__":
+    print("=== PROGRAM PENCARIAN DATA MAHASISWA ===")
+
+    # Contoh 1: Linear Search untuk mencari Risman berdasarkan NIM
+    print("\n--- 1. Linear Search ---")
+    hasil_linear_1 = linear_search(data_mahasiswa, kunci="nim", nilai_kunci="D0425330")
+    tampilkan_hasil(hasil_linear_1, "NIM", "D0425330")
+
+    # Contoh 2: Linear Search untuk mencari nama yang tidak ada
+    hasil_linear_2 = linear_search(data_mahasiswa, kunci="nama", nilai_kunci="Joko Susilo")
+    tampilkan_hasil(hasil_linear_2, "nama", "Joko Susilo")
+
+
+    # Contoh 3: Binary Search untuk mencari Fajar berdasarkan NIM
+    print("\n--- 2. Binary Search ---")
+    hasil_binary_1 = binary_search(data_mahasiswa, kunci="nim", nilai_kunci="2025001")
+    tampilkan_hasil(hasil_binary_1, "NIM", "2025001")
+
+    # Contoh 4: Binary Search untuk mencari Risman berdasarkan tahun masuk
+    # (Catatan: Bisa ada banyak data dengan tahun masuk sama — Binary Search hanya mengembalikan salah satu)
+    hasil_binary_2 = binary_search(data_mahasiswa, kunci="tahun_masuk", nilai_kunci=2025)
+    tampilkan_hasil(hasil_binary_2, "tahun masuk", 2025)
+
+
+    # Tambahan: Binary Search dengan menampilkan data terurut yang digunakan
+    print("\n--- Tambahan: Data Terurut untuk Binary Search (berdasarkan NIM) ---")
+    data_terurut_nim = sorted(data_mahasiswa, key=lambda x: x["nim"])
+    for idx, mhs in enumerate(data_terurut_nim, 1):
+        print(f"{idx}. Nama: {mhs['nama']:15} | NIM: {mhs['nim']:10}")
