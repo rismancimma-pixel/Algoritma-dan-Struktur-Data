@@ -1,1 +1,120 @@
+# Data mahasiswa yang akan diurutkan (termasuk data Risman)
+data_mahasiswa = [
+    {"nama": "Siti Aminah", "nim": "2023002", "tahun_masuk": 2023},
+    {"nama": "Risman", "nim": "D0425330", "tahun_masuk": 2025},
+    {"nama": "Budi Santoso", "nim": "2024005", "tahun_masuk": 2024},
+    {"nama": "Eka Putri", "nim": "2022010", "tahun_masuk": 2022},
+    {"nama": "Fajar Setiawan", "nim": "2025001", "tahun_masuk": 2025}
+]
 
+# Fungsi bantuan untuk menampilkan data mahasiswa
+def tampilkan_data(daftar, judul):
+    print(f"\n=== {judul} ===")
+    for idx, mhs in enumerate(daftar, 1):
+        print(f"{idx}. Nama: {mhs['nama']:15} | NIM: {mhs['nim']:10} | Tahun Masuk: {mhs['tahun_masuk']}")
+
+
+# -----------------------------------------------------------------------------
+# 1. Algoritma Bubble Sort
+# Cara kerja: Menukar elemen berdekatan yang tidak urut secara berulang sampai seluruh data terurut.
+# -----------------------------------------------------------------------------
+def bubble_sort(daftar, kunci="tahun_masuk"):
+    # Membuat salinan data agar data asli tidak berubah
+    data_terurut = daftar.copy()
+    n = len(data_terurut)
+    
+    for i in range(n):
+        # Penanda apakah ada penukaran di iterasi ini (untuk optimalisasi)
+        ada_tukar = False
+        
+        # Iterasi sampai elemen yang belum terurut
+        for j in range(0, n-i-1):
+            # Bandingkan elemen berdasarkan kunci (tahun_masuk atau nim)
+            if data_terurut[j][kunci] > data_terurut[j+1][kunci]:
+                # Tukar elemen
+                data_terurut[j], data_terurut[j+1] = data_terurut[j+1], data_terurut[j]
+                ada_tukar = True
+        
+        # Jika tidak ada penukaran, data sudah terurut — hentikan iterasi
+        if not ada_tukar:
+            break
+    return data_terurut
+
+
+# -----------------------------------------------------------------------------
+# 2. Algoritma Selection Sort
+# Cara kerja: Mencari elemen terkecil/terbesar di bagian yang belum terurut, lalu menempatkannya di posisi yang benar.
+# -----------------------------------------------------------------------------
+def selection_sort(daftar, kunci="tahun_masuk"):
+    data_terurut = daftar.copy()
+    n = len(data_terurut)
+    
+    for i in range(n):
+        # Cari indeks elemen minimum di bagian belum terurut
+        indeks_min = i
+        for j in range(i+1, n):
+            if data_terurut[j][kunci] < data_terurut[indeks_min][kunci]:
+                indeks_min = j
+        
+        # Tukar elemen minimum dengan elemen pertama di bagian belum terurut
+        data_terurut[i], data_terurut[indeks_min] = data_terurut[indeks_min], data_terurut[i]
+    return data_terurut
+
+
+# -----------------------------------------------------------------------------
+# 3. Algoritma Insertion Sort
+# Cara kerja: Memasukkan elemen satu per satu ke dalam posisi yang tepat di bagian data yang sudah terurut.
+# -----------------------------------------------------------------------------
+def insertion_sort(daftar, kunci="tahun_masuk"):
+    data_terurut = daftar.copy()
+    n = len(data_terurut)
+    
+    for i in range(1, n):
+        # Simpan elemen yang akan dimasukkan ke bagian terurut
+        elemen_saat_ini = data_terurut[i]
+        j = i - 1
+        
+        # Geser elemen di bagian terurut yang lebih besar dari elemen_saat_ini ke kanan
+        while j >= 0 and elemen_saat_ini[kunci] < data_terurut[j][kunci]:
+            data_terurut[j+1] = data_terurut[j]
+            j -= 1
+        
+        # Tempatkan elemen_saat_ini di posisi yang tepat
+        data_terurut[j+1] = elemen_saat_ini
+    return data_terurut
+
+
+# -----------------------------------------------------------------------------
+# Implementasi dan Tampilan Hasil
+# -----------------------------------------------------------------------------
+if __name__ == "__main__":
+    # Tampilkan data asli
+    tampilkan_data(data_mahasiswa, "DATA MAHASISWA ASLI")
+
+    # 1. Hasil Bubble Sort (urutkan berdasarkan tahun_masuk)
+    bubble_terurut = bubble_sort(data_mahasiswa, kunci="tahun_masuk")
+    tampilkan_data(bubble_terurut, "BUBBLE SORT (URUT BERDASARKAN TAHUN MASUK)")
+
+    # 2. Hasil Selection Sort (urutkan berdasarkan NIM)
+    selection_terurut = selection_sort(data_mahasiswa, kunci="nim")
+    tampilkan_data(selection_terurut, "SELECTION SORT (URUT BERDASARKAN NIM)")
+
+    # 3. Hasil Insertion Sort (urutkan berdasarkan tahun_masuk, lalu NIM)
+    # Catatan: Untuk urutan ganda, kita bisa ubah kunci menjadi tuple (tahun, nim)
+    def insertion_sort_urut_ganda(daftar):
+        data_terurut = daftar.copy()
+        n = len(data_terurut)
+        for i in range(1, n):
+            elemen_saat_ini = data_terurut[i]
+            j = i - 1
+            # Bandingkan tahun dulu, jika sama bandingkan NIM
+            while j >= 0 and (elemen_saat_ini["tahun_masuk"] < data_terurut[j]["tahun_masuk"] or 
+                              (elemen_saat_ini["tahun_masuk"] == data_terurut[j]["tahun_masuk"] and 
+                               elemen_saat_ini["nim"] < data_terurut[j]["nim"])):
+                data_terurut[j+1] = data_terurut[j]
+                j -= 1
+            data_terurut[j+1] = elemen_saat_ini
+        return data_terurut
+
+    insertion_terurut_ganda = insertion_sort_urut_ganda(data_mahasiswa)
+    tampilkan_data(insertion_terurut_ganda, "INSERTION SORT (URUT BERDASARKAN TAHUN + NIM)")
