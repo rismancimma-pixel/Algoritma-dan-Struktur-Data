@@ -1,1 +1,16 @@
+#satu dimensi(1D) 
 
+#include <stdio.h>
+
+int main() {
+    // Deklarasi dan inisialisasi array 1D (daftar angka)
+    int angka[5] = {10, 20, 30, 40, 50};
+
+    printf("--- Array Satu Dimensi ---\n");
+    // Mengakses dan menampilkan elemen array 1D
+    for (int i = 0; i < 5; i++) {
+        printf("Elemen ke-%d: %d\n", i, angka[i]);
+    }
+    printf("\n");
+    return 0;
+}
