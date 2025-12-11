@@ -1,1 +1,42 @@
+# ==============================================
+# 3. BINARY SEARCH & INTERPOLATION SEARCH - Tema Risman
+# ==============================================
+print("\n=== 3. Binary Search & Interpolation Search (Tema Risman) ===")
 
+# Data terurut: Nilai mata kuliah Risman (disusun dari terkecil)
+nilai_terurut = [80, 82, 85, 88, 90, 92]
+target = 88  # Nilai yang dicari (nilai Basis Data Risman)
+
+# Binary Search
+def binary_search(data, target):
+    left, right = 0, len(data)-1
+    while left <= right:
+        mid = (left + right) // 2
+        if data[mid] == target:
+            return f"Binary Search: Nilai {target} ditemukan di indeks {mid} (nilai Basis Data Risman)"
+        elif data[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return "Nilai tidak ditemukan"
+
+# Interpolation Search
+def interpolation_search(data, target):
+    left, right = 0, len(data)-1
+    while left <= right and data[left] <= target <= data[right]:
+        if left == right:
+            return f"Interpolation Search: Nilai {target} ditemukan di indeks {left}" if data[left]==target else "Tidak ditemukan"
+        pos = left + ((target - data[left]) * (right - left)) // (data[right] - data[left])
+        if data[pos] == target:
+            return f"Interpolation Search: Nilai {target} ditemukan di indeks {pos} (nilai Basis Data Risman)"
+        elif data[pos] < target:
+            left = pos + 1
+        else:
+            right = pos - 1
+    return "Nilai tidak ditemukan"
+
+print(f"Data nilai terurut: {nilai_terurut}")
+print(f"Target yang dicari: {target}")
+print(binary_search(nilai_terurut, target))
+print(interpolation_search(nilai_terurut, target))
+print("Keterangan: Keduanya membutuhkan data terurut; Interpolation lebih baik untuk data merata\n")
