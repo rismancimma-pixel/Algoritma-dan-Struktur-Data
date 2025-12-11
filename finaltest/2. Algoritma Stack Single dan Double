@@ -1,1 +1,71 @@
+# ==============================================
+# 2. ALGORITMA STACK SINGLE DAN DOUBLE - Tema Risman
+# ==============================================
+print("\n=== 2. Stack Single & Double (Tema Risman) ===")
 
+# Stack Single: Catatan aktivitas Risman
+class SingleStack:
+    def __init__(self):
+        self.stack = []
+    
+    def push(self, aktivitas):
+        self.stack.append(aktivitas)
+        print(f"Ditambahkan: {aktivitas}")
+    
+    def pop(self):
+        if not self.is_empty():
+            return f"Dihapus: {self.stack.pop()}"
+        return "Stack kosong (tidak ada aktivitas)"
+    
+    def is_empty(self):
+        return len(self.stack) == 0
+
+print("=== Stack Single (Catatan Aktivitas Risman) ===")
+aktivitas_stack = SingleStack()
+aktivitas_stack.push("Belajar Python (NIM D0425320)")
+aktivitas_stack.push("Kerjakan Tugas Struktur Data")
+aktivitas_stack.push("Belajar Algoritma")
+print(aktivitas_stack.pop())
+print(aktivitas_stack.pop())
+print("Keterangan: Stack Single mengikuti aturan LIFO (Last In First Out)\n")
+
+
+# Stack Double: Simpan tugas dan catatan pribadi Risman dalam 1 list
+class DoubleStack:
+    def __init__(self, size):
+        self.size = size
+        self.stack = [None] * size
+        self.top1 = -1  # Atas stack 1 (Tugas Akademik)
+        self.top2 = size  # Atas stack 2 (Catatan Pribadi)
+    
+    def push_tugas(self, tugas):
+        if self.top1 < self.top2 - 1:
+            self.top1 += 1
+            self.stack[self.top1] = tugas
+            print(f"Tugas ditambahkan: {tugas}")
+        else:
+            print("Stack Tugas penuh")
+    
+    def push_catatan(self, catatan):
+        if self.top1 < self.top2 - 1:
+            self.top2 -= 1
+            self.stack[self.top2] = catatan
+            print(f"Catatan ditambahkan: {catatan}")
+        else:
+            print("Stack Catatan penuh")
+    
+    def pop_tugas(self):
+        return self.stack[self.top1] if self.top1 >=0 else "Stack Tugas kosong"
+    
+    def pop_catatan(self):
+        return self.stack[self.top2] if self.top2 < self.size else "Stack Catatan kosong"
+
+print("=== Stack Double (Tugas & Catatan Risman) ===")
+double_stack = DoubleStack(5)  # Ukuran total 5
+double_stack.push_tugas("Tugas Python (NIM D0425320)")
+double_stack.push_tugas("Tugas Basis Data")
+double_stack.push_catatan("Beli buku algoritma")
+double_stack.push_catatan("Janji bertemu teman")
+print(f"Pop Tugas terbaru: {double_stack.pop_tugas()}")
+print(f"Pop Catatan terbaru: {double_stack.pop_catatan()}")
+print("Keterangan: Dua stack berbagi ruang list, stack 1 dari kiri, stack 2 dari kanan\n")
