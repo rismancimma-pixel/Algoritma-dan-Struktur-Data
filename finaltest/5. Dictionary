@@ -1,1 +1,32 @@
+# ==============================================
+# 5. DICTIONARY - Tema Risman (NIM D0425320)
+# ==============================================
+print("\n=== 6. Dictionary (Identitas Risman) ===")
 
+# Dictionary: Menyimpan identitas lengkap Risman
+identitas_risman = {
+    "nama": "Risman",
+    "nim": "D0425320",
+    "jurusan": "Teknik Informatika",
+    "universitas": "Universitas (contoh)",  # Bisa diganti dengan nama kampus sebenarnya
+    "umur": 22,
+    "ipk_semester_3": 3.85,
+    "mata_kuliah_favorit": "Struktur Data"
+}
+
+# Akses, tambah, ubah, hapus data
+print("Identitas Awal:")
+for kunci, nilai in identitas_risman.items():
+    print(f"- {kunci}: {nilai}")
+
+# Ubah data
+identitas_risman["ipk_semester_3"] = 3.90
+# Tambah data
+identitas_risman["alamat"] = "Makassar"  # Sesuai lokasi pengguna saat ini
+# Hapus data
+del identitas_risman["umur"]
+
+print("\nIdentitas Setelah Diubah/Tambah/Hapus:")
+for kunci, nilai in identitas_risman.items():
+    print(f"- {kunci}: {nilai}")
+print("Keterangan: Dictionary menyimpan data dalam pasangan (kunci: nilai) yang mudah diakses\n")
