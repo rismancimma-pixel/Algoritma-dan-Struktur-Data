@@ -1,1 +1,63 @@
+# Data yang akan diurutkan: Nilai UTS mata kuliah Risman (NIM D0425320)
+nilai_uts_risman = [82, 75, 90, 88, 78, 92]
+print(f"Data Awal (Nilai UTS Risman): {nilai_uts_risman}\n")
 
+
+# ==============================================
+# 1. BUBBLE SORT
+# ==============================================
+def bubble_sort(data):
+    n = len(data)
+    for i in range(n):
+        swapped = False
+        # Tukar elemen bersebelahan yang tidak terurut
+        for j in range(n - i - 1):
+            if data[j] > data[j + 1]:
+                data[j], data[j + 1] = data[j + 1], data[j]
+                swapped = True
+        if not swapped:
+            break  # Hentikan dini jika sudah terurut
+    return data
+
+hasil_bubble = bubble_sort(nilai_uts_risman.copy())
+print(f"1. Hasil Bubble Sort: {hasil_bubble}")
+print("   Keterangan: 'Gelembung' elemen terbesar ke posisi benar (LIFO pada putaran)\n")
+
+
+# ==============================================
+# 2. SELECTION SORT
+# ==============================================
+def selection_sort(data):
+    n = len(data)
+    for i in range(n):
+        min_idx = i  # Cari indeks elemen terkecil
+        for j in range(i + 1, n):
+            if data[j] < data[min_idx]:
+                min_idx = j
+        # Tukar elemen terkecil dengan elemen pertama pada rentang yang belum terurut
+        data[i], data[min_idx] = data[min_idx], data[i]
+    return data
+
+hasil_selection = selection_sort(nilai_uts_risman.copy())
+print(f"2. Hasil Selection Sort: {hasil_selection}")
+print("   Keterangan: Pilih elemen terkecil, taruh di posisi yang benar\n")
+
+
+# ==============================================
+# 3. INSERTION SORT
+# ==============================================
+def insertion_sort(data):
+    n = len(data)
+    for i in range(1, n):
+        key = data[i]  # Elemen yang akan disisipkan
+        j = i - 1
+        # Geser elemen yang lebih besar dari key ke kanan
+        while j >= 0 and key < data[j]:
+            data[j + 1] = data[j]
+            j -= 1
+        data[j + 1] = key  # Sisipkan key di posisi yang benar
+    return data
+
+hasil_insertion = insertion_sort(nilai_uts_risman.copy())
+print(f"3. Hasil Insertion Sort: {hasil_insertion}")
+print("   Keterangan: Sisipkan elemen satu per satu ke dalam bagian yang sudah terurut")
