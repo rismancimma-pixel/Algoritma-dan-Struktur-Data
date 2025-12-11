@@ -1,0 +1,21 @@
+# ==============================================
+# 7. TIPE DATA UTAMA - Tema Risman (NIM D0425320)
+# ==============================================
+print("\n=== 7. Tipe Data Utama (Contoh Risman) ===")
+
+# 1. Integer (bilangan bulat)
+nim_angka = int("D0425320".replace("D", ""))  # Ambil angka dari NIM D0425320
+print(f"- Integer: Angka dari NIM Risman = {nim_angka}, Tipe = {type(nim_angka)}")
+
+# 2. String (teks)
+nama_lengkap = "Risman - NIM D0425320"
+print(f"- String: Nama dan NIM = '{nama_lengkap}', Tipe = {type(nama_lengkap)}")
+
+# 3. Float (bilangan desimal)
+ipk_risman = 3.85
+print(f"- Float: IPK Risman = {ipk_risman}, Tipe = {type(ipk_risman)}")
+
+# 4. Boolean (benar/salah) - tambahan untuk lebih lengkap
+apakah_lulus = ipk_risman >= 2.00
+print(f"- Boolean: Apakah Risman lulus? = {apakah_lulus}, Tipe = {type(apakah_lulus)}")
+print("Keterangan: Tipe data dasar yang sering digunakan dalam pemrograman Python")
