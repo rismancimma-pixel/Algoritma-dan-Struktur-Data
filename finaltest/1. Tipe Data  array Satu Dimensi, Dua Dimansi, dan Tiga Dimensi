@@ -1,1 +1,54 @@
+# ==============================================
+# 1. TIPE DATA ARRAY (1D, 2D, 3D) - Tema Risman
+# ==============================================
+print("=== 1. Array Dimensi Berbagai (Tema Risman) ===")
 
+# Array Satu Dimensi (1D): Data pribadi Risman sederhana
+array_1d = [
+    "Risman",          # Nama
+    "D0425320",        # NIM
+    20,                # Umur (contoh)
+    "Teknik Informatika"  # Jurusan (contoh)
+]
+print("Array 1D (Data Pribadi Sederhana):")
+print(array_1d)
+print("Keterangan: Menyimpan 4 data tunggal tentang Risman\n")
+
+
+# Array Dua Dimensi (2D): Nilai mata kuliah Risman
+array_2d = [
+    ["Pemrograman Python", 85],
+    ["Struktur Data", 90],
+    ["Basis Data", 88],
+    ["Algoritma", 92]
+]
+print("Array 2D (Nilai Mata Kuliah Risman):")
+for mk, nilai in array_2d:
+    print(f"- {mk}: {nilai}")
+print("Keterangan: Setiap baris berisi [nama_mata_kuliah, nilai]\n")
+
+
+# Array Tiga Dimensi (3D): Riwayat akademik Risman per semester
+array_3d = [
+    # Semester 1
+    [
+        ["Pemrograman Dasar", 80],
+        ["Matematika Diskrit", 82]
+    ],
+    # Semester 2
+    [
+        ["Pemrograman Python", 85],
+        ["Struktur Data", 90]
+    ],
+    # Semester 3
+    [
+        ["Basis Data", 88],
+        ["Algoritma", 92]
+    ]
+]
+print("Array 3D (Riwayat Nilai Per Semester Risman):")
+for semester, mk_list in enumerate(array_3d, start=1):
+    print(f"Semester {semester}:")
+    for mk, nilai in mk_list:
+        print(f"  - {mk}: {nilai}")
+print("Keterangan: Lapisan 1=semester, Lapisan 2=mata kuliah, Lapisan 3=[nama, nilai]\n")
